@@ -12,7 +12,17 @@ const handler = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
-  async session({ session }) {},
+
+  // To know which user is currently online
+  async session({ session }) {
+    const sessionUser = await User.findOne({
+      email: session.user.email,
+    });
+
+    session.user.id = sessionUser._id.toString();
+
+    return session;
+  },
   async signIn({ profile }) {
     try {
       connectToDB();
